@@ -35,7 +35,7 @@
 
     // Add a camera
     camera = new THREE.PerspectiveCamera(
-    35, /* 50 */
+    40, /* 50 */
     window.innerWidth / window.innerHeight,
     0.1,
     1000);
@@ -234,7 +234,7 @@ loader.load('./mixtape.svg', function(texture) {
 }); */
 
 const textureLoader = new THREE.TextureLoader();
-textureLoader.load('https://alibhtty.github.io/apitape/mixtape.svg', function(texture) {
+textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function(texture) {
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
 
@@ -272,7 +272,7 @@ textureLoader.load('https://alibhtty.github.io/apitape/mixtape.svg', function(te
     fragmentShader: fragmentShader
   });
 
-  let geometry = new THREE.PlaneGeometry(16, 9); // Ajusta según sea necesario
+  let geometry = new THREE.PlaneGeometry(10, 10); // 16, 9  Ajusta según sea necesario
   let plane = new THREE.Mesh(geometry, material);
 
   plane.position.set(-0.25, -2.5, -20);
