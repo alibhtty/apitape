@@ -293,7 +293,7 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     return needResize;
   }
 
-  /* window.addEventListener('click', e => raycast(e));
+  window.addEventListener('click', e => raycast(e));
   window.addEventListener('touchend', e => raycast(e, true));
 
   function raycast(e, touch = false) {
@@ -322,10 +322,10 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
         }
       }
     }
-  } */
+  }
 
     // Listener para el movimiento del mouse
-window.addEventListener('click', e => raycast(e));
+/* window.addEventListener('click', e => raycast(e));
 window.addEventListener('touchend', e => raycast(e, true)); // Solo se dispara cuando se suelta el dedo
 window.addEventListener('touchmove', e => raycast(e, true)); // Se dispara continuamente mientras se desliza el dedo
 
@@ -355,7 +355,7 @@ function raycast(e, touch = false) {
       }
     }
   }
-}
+} */
 
 
 
@@ -379,7 +379,7 @@ function raycast(e, touch = false) {
     }, to._clip.duration * 1000 - (tSpeed + fSpeed) * 1000);
   }
 
-  document.addEventListener('mousemove', function (e) {
+  /* document.addEventListener('mousemove', function (e) {
     var mousecoords = getMousePos(e);
     if (neck && waist) {
 
@@ -440,6 +440,79 @@ function raycast(e, touch = false) {
       dy = degreeLimit * yPercentage / 100;
     }
     return { x: dx, y: dy };
+  } */
+
+    // Evento para seguir el movimiento del mouse
+document.addEventListener('mousemove', function (e) {
+  var mousecoords = getMousePos(e);
+  if (neck && waist) {
+    moveJoint(mousecoords, neck, 50);
+    moveJoint(mousecoords, waist, 30);
   }
+});
+
+// Evento para seguir el movimiento del touch (deslizamiento)
+document.addEventListener('touchmove', function (e) {
+  var touchcoords = getTouchPos(e);
+  if (neck && waist) {
+    moveJoint(touchcoords, neck, 50);
+    moveJoint(touchcoords, waist, 30);
+  }
+});
+
+// Obtener las coordenadas del mouse
+function getMousePos(e) {
+  return { x: e.clientX, y: e.clientY };
+}
+
+// Obtener las coordenadas del touch
+function getTouchPos(e) {
+  return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+}
+
+// Mover las articulaciones (cuello y cintura) según las coordenadas
+function moveJoint(pos, joint, degreeLimit) {
+  let degrees = getMouseDegrees(pos.x, pos.y, degreeLimit);
+  joint.rotation.y = THREE.Math.degToRad(degrees.x);
+  joint.rotation.x = THREE.Math.degToRad(degrees.y);
+}
+
+// Calcular los grados de rotación según las coordenadas del mouse/touch
+function getMouseDegrees(x, y, degreeLimit) {
+  let dx = 0,
+    dy = 0,
+    xdiff,
+    xPercentage,
+    ydiff,
+    yPercentage;
+
+  let w = { x: window.innerWidth, y: window.innerHeight };
+
+  if (x <= w.x / 2) {
+    xdiff = w.x / 2 - x;
+    xPercentage = xdiff / (w.x / 2) * 100;
+    dx = degreeLimit * xPercentage / 100 * -1;
+  }
+
+  if (x >= w.x / 2) {
+    xdiff = x - w.x / 2;
+    xPercentage = xdiff / (w.x / 2) * 100;
+    dx = degreeLimit * xPercentage / 100;
+  }
+
+  if (y <= w.y / 2) {
+    ydiff = w.y / 2 - y;
+    yPercentage = ydiff / (w.y / 2) * 100;
+    dy = degreeLimit * 0.5 * yPercentage / 100 * -1;
+  }
+
+  if (y >= w.y / 2) {
+    ydiff = y - w.y / 2;
+    yPercentage = ydiff / (w.y / 2) * 100;
+    dy = degreeLimit * yPercentage / 100;
+  }
+
+  return { x: dx, y: dy };
+}
 
 })();
