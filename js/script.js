@@ -20,7 +20,7 @@
 
     const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
-    const backgroundColor = 0x000001; /* f1f1f1 */
+    const backgroundColor = 0x000010; /* f1f1f1 */
 
     // Init the scene
     scene = new THREE.Scene();
@@ -35,7 +35,7 @@
 
     // Add a camera
     camera = new THREE.PerspectiveCamera(
-    40, /* 50 */
+    35, /* 50 */
     window.innerWidth / window.innerHeight,
     0.1,
     1000);
@@ -157,7 +157,7 @@
     sphere.position.x = -0.25;
     scene.add(sphere); */
 
-    let vertexShader = `
+    /* let vertexShader = `
   varying vec2 vUv;
   void main() {
     vUv = uv;
@@ -189,7 +189,95 @@ let sphere = new THREE.Mesh(geometry, material);
 sphere.position.z = -20;
 sphere.position.y = -2.5;
 sphere.position.x = -0.25;
-scene.add(sphere);
+scene.add(sphere); */
+
+
+
+
+
+/* const loader = new THREE.TextureLoader();
+loader.load('./mixtape.svg', function(texture) {
+  let vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  let fragmentShader = `
+    uniform sampler2D texture;
+    varying vec2 vUv;
+    void main() {
+      vec4 texColor = texture2D(texture, vUv);
+      float blur = 0.52; // Ajusta este valor para cambiar la cantidad de desenfoque
+      vec4 blurredColor = texColor * (1.0 - smoothstep(0.0, blur, length(vUv - 0.5)));
+      gl_FragColor = blurredColor;
+    }
+  `;
+
+  let material = new THREE.ShaderMaterial({
+    uniforms: {
+      texture: { value: texture }
+    },
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader
+  });
+
+  let geometry = new THREE.PlaneGeometry(16, 16); // Ajusta el tamaño del plano según sea necesario
+  let plane = new THREE.Mesh(geometry, material);
+
+  plane.position.z = -20;
+  plane.position.y = -2.5;
+  plane.position.x = -0.25;
+  scene.add(plane);
+}); */
+
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load('https://alibhtty.github.io/apitape/mixtape.svg', function(texture) {
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+
+  // Vertex Shader
+  let vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  // Fragment Shader
+  let fragmentShader = `
+    uniform sampler2D texture;
+    varying vec2 vUv;
+    void main() {
+      vec4 texColor = texture2D(texture, vUv);
+
+      // El color deseado #ff6600 en formato RGB
+      vec3 targetColor = vec3(1.0, 0.4, 0.0); // Color naranja (#ff6600)
+
+      // Aplica el color multiplicando por la textura original
+      vec4 coloredTexture = vec4(texColor.rgb * targetColor, texColor.a);
+
+      gl_FragColor = coloredTexture;
+    }
+  `;
+
+  let material = new THREE.ShaderMaterial({
+    uniforms: {
+      texture: { value: texture }
+    },
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader
+  });
+
+  let geometry = new THREE.PlaneGeometry(16, 9); // Ajusta según sea necesario
+  let plane = new THREE.Mesh(geometry, material);
+
+  plane.position.set(-0.25, -2.5, -20);
+  scene.add(plane);
+});
 
 
 
