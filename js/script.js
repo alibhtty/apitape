@@ -20,7 +20,7 @@
 
     const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
-    const backgroundColor = 0x111000; /* f1f1f1 */
+    const backgroundColor = 0x000001; /* f1f1f1 */
 
     // Init the scene
     scene = new THREE.Scene();
@@ -35,7 +35,7 @@
 
     // Add a camera
     camera = new THREE.PerspectiveCamera(
-    35, /* 50 */
+    40, /* 50 */
     window.innerWidth / window.innerHeight,
     0.1,
     1000);
@@ -115,13 +115,13 @@
 
 
     // Add lights
-    let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
+    let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.60);
     hemiLight.position.set(0, 50, 0);
     // Add hemisphere light to scene
     scene.add(hemiLight);
 
     let d = 8.25;
-    let dirLight = new THREE.DirectionalLight(0xfff000, 0.54); // COLOR PISO
+    let dirLight = new THREE.DirectionalLight(0xfaf000, 0.64); // 0.54  #fff000 COLOR LUCES
     dirLight.position.set(-8, 12, 8);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
@@ -138,7 +138,7 @@
     // Floor
     let floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1, 1);
     let floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0xeeeeee,
+      color: 0x111222, /* eeeeee */
       shininess: 0 });
 
 
@@ -148,14 +148,52 @@
     floor.position.y = -11;
     scene.add(floor);
 
-    let geometry = new THREE.SphereGeometry(8, 32, 32);
-    let material = new THREE.MeshBasicMaterial({ color: /* 0x9bffaf */ 0xf2ce2e }); // color de circulo 0xf2ce2e 
+    /* let geometry = new THREE.SphereGeometry(8, 32, 32); /* 8, 32, 32 /
+    let material = new THREE.MeshBasicMaterial({ color: /* 0x9bffaf / 0xff6600 }); // color de circulo 0xf2ce2e 
     let sphere = new THREE.Mesh(geometry, material);
 
-    sphere.position.z = -15;
+    sphere.position.z = -15; /* -15 /
     sphere.position.y = -2.5;
     sphere.position.x = -0.25;
-    scene.add(sphere);
+    scene.add(sphere); */
+
+    let vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+let fragmentShader = `
+  uniform vec3 color;
+  varying vec2 vUv;
+  void main() {
+    float blur = 0.52; // Ajusta este valor para cambiar la cantidad de desenfoque
+    vec3 blurredColor = color * (1.0 - smoothstep(0.0, blur, length(vUv - 0.5)));
+    gl_FragColor = vec4(blurredColor, 1.0);
+  }
+`;
+
+let material = new THREE.ShaderMaterial({
+  uniforms: {
+    color: { value: new THREE.Color(0x066EFF) }
+  },
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader
+});
+
+let geometry = new THREE.SphereGeometry(8, 32, 32);
+let sphere = new THREE.Mesh(geometry, material);
+
+sphere.position.z = -20;
+sphere.position.y = -2.5;
+sphere.position.x = -0.25;
+scene.add(sphere);
+
+
+
+
   }
 
 
