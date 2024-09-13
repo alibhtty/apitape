@@ -18,7 +18,7 @@
 
   function init() {
 
-    const MODEL_PATH = 'https://alibhtty.github.io/apitape/js/human.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
+    const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
     const backgroundColor = 0x111000; /* f1f1f1 */
 
@@ -35,7 +35,7 @@
 
     // Add a camera
     camera = new THREE.PerspectiveCamera(
-    50,
+    35, /* 50 */
     window.innerWidth / window.innerHeight,
     0.1,
     1000);
@@ -44,7 +44,7 @@
     camera.position.x = 0;
     camera.position.y = -3;
 
-    let stacy_txt = new THREE.TextureLoader().load('https://alibhtty.github.io/apitape/js/stacys.jpg'); /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy.jpg */
+    let stacy_txt = new THREE.TextureLoader().load('https://alibhtty.github.io/apitape/js/ab.jpg'); /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy.jpg */
     stacy_txt.flipY = false;
 
     const stacy_mtl = new THREE.MeshPhongMaterial({
