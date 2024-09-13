@@ -44,7 +44,7 @@
     camera.position.x = 0;
     camera.position.y = -3;
 
-    let stacy_txt = new THREE.TextureLoader().load('https://www.dropbox.com/scl/fi/39icobj2tptihd36unzd8/stacys.jpg?rlkey=mc3wat8j3mmapxsth9ly73pit&raw=1'); /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy.jpg */
+    let stacy_txt = new THREE.TextureLoader().load('https://alibhtty.github.io/apitape/js/stacys.jpg'); /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy.jpg */
     stacy_txt.flipY = false;
 
     const stacy_mtl = new THREE.MeshPhongMaterial({
