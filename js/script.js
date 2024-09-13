@@ -20,7 +20,7 @@
 
     const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
-    const backgroundColor = 0x000010; /* f1f1f1 */
+    const backgroundColor = 0x0a0a0a; /* f1f1f1 */
 
     // Init the scene
     scene = new THREE.Scene();
@@ -193,46 +193,6 @@ scene.add(sphere); */
 
 
 
-
-
-/* const loader = new THREE.TextureLoader();
-loader.load('./mixtape.svg', function(texture) {
-  let vertexShader = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-
-  let fragmentShader = `
-    uniform sampler2D texture;
-    varying vec2 vUv;
-    void main() {
-      vec4 texColor = texture2D(texture, vUv);
-      float blur = 0.52; // Ajusta este valor para cambiar la cantidad de desenfoque
-      vec4 blurredColor = texColor * (1.0 - smoothstep(0.0, blur, length(vUv - 0.5)));
-      gl_FragColor = blurredColor;
-    }
-  `;
-
-  let material = new THREE.ShaderMaterial({
-    uniforms: {
-      texture: { value: texture }
-    },
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader
-  });
-
-  let geometry = new THREE.PlaneGeometry(16, 16); // Ajusta el tamaño del plano según sea necesario
-  let plane = new THREE.Mesh(geometry, material);
-
-  plane.position.z = -20;
-  plane.position.y = -2.5;
-  plane.position.x = -0.25;
-  scene.add(plane);
-}); */
-
 const textureLoader = new THREE.TextureLoader();
 textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function(texture) {
   texture.minFilter = THREE.LinearFilter;
@@ -247,15 +207,31 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     }
   `;
 
-  // Fragment Shader
+  // Fragment Shader con recorte de bordes redondeados
   let fragmentShader = `
     uniform sampler2D texture;
     varying vec2 vUv;
+
+    // Función para redondear las esquinas
+    bool isInsideRoundedRect(vec2 uv, float radius) {
+      vec2 dist = abs(uv - vec2(0.5, 0.5)); // Distancia desde el centro
+      return (dist.x <= 0.5 - radius && dist.y <= 0.5 - radius) || 
+             (length(dist - vec2(0.5 - radius, 0.5 - radius)) <= radius);
+    }
+
     void main() {
       vec4 texColor = texture2D(texture, vUv);
 
+      // Define el radio del borde redondeado (ajustable)
+      float borderRadius = 0.1; // Radio de las esquinas (0.0 a 0.5)
+
+      /* // Si está fuera del borde redondeado, no dibuja nada (deja transparente)
+      if (!isInsideRoundedRect(vUv, borderRadius)) {
+        discard;
+      } */
+
       // El color deseado #ff6600 en formato RGB
-      vec3 targetColor = vec3(1.0, 0.4, 0.0); // Color naranja (#ff6600)
+      vec3 targetColor = vec3(1.0, 1.0, 1.5);
 
       // Aplica el color multiplicando por la textura original
       vec4 coloredTexture = vec4(texColor.rgb * targetColor, texColor.a);
@@ -269,16 +245,16 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
       texture: { value: texture }
     },
     vertexShader: vertexShader,
-    fragmentShader: fragmentShader
+    fragmentShader: fragmentShader,
+    transparent: true // Necesario para manejar áreas transparentes
   });
 
-  let geometry = new THREE.PlaneGeometry(10, 10); // 16, 9  Ajusta según sea necesario
+  let geometry = new THREE.PlaneGeometry(11, 11); // Ajusta según sea necesario
   let plane = new THREE.Mesh(geometry, material);
 
   plane.position.set(-0.25, -2.5, -20);
   scene.add(plane);
 });
-
 
 
 
@@ -317,7 +293,7 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     return needResize;
   }
 
-  window.addEventListener('click', e => raycast(e));
+  /* window.addEventListener('click', e => raycast(e));
   window.addEventListener('touchend', e => raycast(e, true));
 
   function raycast(e, touch = false) {
@@ -346,7 +322,43 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
         }
       }
     }
+  } */
+
+    // Listener para el movimiento del mouse
+window.addEventListener('click', e => raycast(e));
+window.addEventListener('touchend', e => raycast(e, true)); // Solo se dispara cuando se suelta el dedo
+window.addEventListener('touchmove', e => raycast(e, true)); // Se dispara continuamente mientras se desliza el dedo
+
+function raycast(e, touch = false) {
+  var mouse = {};
+  if (touch) {
+    mouse.x = 2 * (e.changedTouches[0].clientX / window.innerWidth) - 1;
+    mouse.y = 1 - 2 * (e.changedTouches[0].clientY / window.innerHeight);
+  } else {
+    mouse.x = 2 * (e.clientX / window.innerWidth) - 1;
+    mouse.y = 1 - 2 * (e.clientY / window.innerHeight);
   }
+
+  // Actualiza el rayo de selección con la cámara y la posición del mouse
+  raycaster.setFromCamera(mouse, camera);
+
+  // Calcula los objetos que intersectan el rayo de selección
+  var intersects = raycaster.intersectObjects(scene.children, true);
+
+  if (intersects[0]) {
+    var object = intersects[0].object;
+
+    if (object.name === 'stacy') {
+      if (!currentlyAnimating) {
+        currentlyAnimating = true;
+        playOnClick();
+      }
+    }
+  }
+}
+
+
+
 
   // Get a random animation, and play it 
   function playOnClick() {
