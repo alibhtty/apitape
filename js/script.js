@@ -18,7 +18,7 @@
 
   function init() {
 
-    const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb';
+    const MODEL_PATH = 'https://alibhtty.github.io/apitape/js/human.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
     const backgroundColor = 0x111000; /* f1f1f1 */
 
