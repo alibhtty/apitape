@@ -17,20 +17,20 @@
 
   const sounds = [
     new Audio('https://alibhtty.github.io/apitape/js/audio/ropa.mp3'), /* op busqueda */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op whoosh */
+    new Audio('https://alibhtty.github.io/apitape/js/audio/whoosh.mp3'), /* op whoosh */
     new Audio('https://alibhtty.github.io/apitape/js/audio/dance.mp3'), /* op dance */
     new Audio('https://alibhtty.github.io/apitape/js/audio/whoosh.mp3'), /* op salto */
-    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op confused */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* confused */
+    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* falta susto */
+    new Audio('https://alibhtty.github.io/apitape/js/audio/confuso.mp3'), /* falta confuso */
     new Audio('https://alibhtty.github.io/apitape/js/audio/saludo.mp3'), /* saludo baile gol */
-    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op gol */
+    new Audio('https://alibhtty.web.app/assets/media/audio/golf.mp3'), /* op gol */
   ];
 
   init();
 
   function init() {
 
-    const MODEL_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
+    const MODEL_PATH = 'https://alibhtty.github.io/apitape/js/stacy_lightweight.glb'; /* https://s3-us-west-2.amazonaws.com/s.cdpn.io/1376484/stacy_lightweight.glb */
     const canvas = document.querySelector('#c');
     const backgroundColor = 0x0a0a0a; /* f1f1f1 */
 
