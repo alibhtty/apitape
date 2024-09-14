@@ -47,7 +47,7 @@
 
     // Add a camera
     camera = new THREE.PerspectiveCamera(
-    40, /* 50 */
+    44, /* 50 */
     window.innerWidth / window.innerHeight,
     0.1,
     1000);
