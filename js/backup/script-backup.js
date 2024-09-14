@@ -13,18 +13,6 @@
   currentlyAnimating = false, // Used to check whether characters neck is being used in another anim
   raycaster = new THREE.Raycaster(), // Used to detect the click on our character
   loaderAnim = document.getElementById('js-loader');
-  currentlyPlayingSound = null;
-
-  const sounds = [
-    new Audio('https://alibhtty.github.io/apitape/js/audio/ropa.mp3'), /* op busqueda */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op whoosh */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/dance.mp3'), /* op dance */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op salto */
-    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op confused */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* confused */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/saludo.mp3'), /* saludo baile gol */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* op gol */
-  ];
 
   init();
 
@@ -150,7 +138,7 @@
     // Floor
     let floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1, 1);
     let floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0x111333, /* eeeeee */
+      color: 0x111222, /* eeeeee */
       shininess: 0 });
 
 
@@ -159,6 +147,51 @@
     floor.receiveShadow = true;
     floor.position.y = -11;
     scene.add(floor);
+
+    /* let geometry = new THREE.SphereGeometry(8, 32, 32); /* 8, 32, 32 /
+    let material = new THREE.MeshBasicMaterial({ color: /* 0x9bffaf / 0xff6600 }); // color de circulo 0xf2ce2e 
+    let sphere = new THREE.Mesh(geometry, material);
+
+    sphere.position.z = -15; /* -15 /
+    sphere.position.y = -2.5;
+    sphere.position.x = -0.25;
+    scene.add(sphere); */
+
+    /* let vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+let fragmentShader = `
+  uniform vec3 color;
+  varying vec2 vUv;
+  void main() {
+    float blur = 0.52; // Ajusta este valor para cambiar la cantidad de desenfoque
+    vec3 blurredColor = color * (1.0 - smoothstep(0.0, blur, length(vUv - 0.5)));
+    gl_FragColor = vec4(blurredColor, 1.0);
+  }
+`;
+
+let material = new THREE.ShaderMaterial({
+  uniforms: {
+    color: { value: new THREE.Color(0x066EFF) }
+  },
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader
+});
+
+let geometry = new THREE.SphereGeometry(8, 32, 32);
+let sphere = new THREE.Mesh(geometry, material);
+
+sphere.position.z = -20;
+sphere.position.y = -2.5;
+sphere.position.x = -0.25;
+scene.add(sphere); */
+
+
 
 const textureLoader = new THREE.TextureLoader();
 textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function(texture) {
@@ -228,18 +261,17 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
   }
 
 
-
-
-
   function update() {
     if (mixer) {
       mixer.update(clock.getDelta());
     }
+
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement;
       camera.aspect = canvas.clientWidth / canvas.clientHeight;
       camera.updateProjectionMatrix();
     }
+
     renderer.render(scene, camera);
     requestAnimationFrame(update);
   }
@@ -252,7 +284,9 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     let height = window.innerHeight;
     let canvasPixelWidth = canvas.width / window.devicePixelRatio;
     let canvasPixelHeight = canvas.height / window.devicePixelRatio;
-    const needResize = canvasPixelWidth !== width || canvasPixelHeight !== height;
+
+    const needResize =
+    canvasPixelWidth !== width || canvasPixelHeight !== height;
     if (needResize) {
       renderer.setSize(width, height, false);
     }
@@ -271,12 +305,17 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
       mouse.x = 2 * (e.clientX / window.innerWidth) - 1;
       mouse.y = 1 - 2 * (e.clientY / window.innerHeight);
     }
+    // update the picking ray with the camera and mouse position
     raycaster.setFromCamera(mouse, camera);
+
+    // calculate objects intersecting the picking ray
     var intersects = raycaster.intersectObjects(scene.children, true);
 
     if (intersects[0]) {
       var object = intersects[0].object;
+
       if (object.name === 'stacy') {
+
         if (!currentlyAnimating) {
           currentlyAnimating = true;
           playOnClick();
@@ -285,50 +324,123 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     }
   }
 
-  // Reproduce una animación aleatoria con sonido, si está disponible
-  function playOnClick() {
-    let animIndex = Math.floor(Math.random() * possibleAnims.length);
-    let selectedAnim = possibleAnims[animIndex];
+    // Listener para el movimiento del mouse
+/* window.addEventListener('click', e => raycast(e));
+window.addEventListener('touchend', e => raycast(e, true)); // Solo se dispara cuando se suelta el dedo
+window.addEventListener('touchmove', e => raycast(e, true)); // Se dispara continuamente mientras se desliza el dedo
 
-    // Limitar el índice de sonido al tamaño del arreglo
-    if (animIndex < sounds.length) {
-      // Detener el sonido actual si hay uno reproduciéndose
-      if (currentlyPlayingSound) {
-        currentlyPlayingSound.pause();
-        currentlyPlayingSound.currentTime = 0;
-      }
-
-      // Reproducir el sonido correspondiente
-      currentlyPlayingSound = sounds[animIndex];
-      currentlyPlayingSound.play();
-    } else {
-      console.warn(`No se encontró sonido para la animación con índice ${animIndex}`);
-    }
-
-    playModifierAnimation(idle, 0.25, selectedAnim, 0.25);
+function raycast(e, touch = false) {
+  var mouse = {};
+  if (touch) {
+    mouse.x = 2 * (e.changedTouches[0].clientX / window.innerWidth) - 1;
+    mouse.y = 1 - 2 * (e.changedTouches[0].clientY / window.innerHeight);
+  } else {
+    mouse.x = 2 * (e.clientX / window.innerWidth) - 1;
+    mouse.y = 1 - 2 * (e.clientY / window.innerHeight);
   }
+
+  // Actualiza el rayo de selección con la cámara y la posición del mouse
+  raycaster.setFromCamera(mouse, camera);
+
+  // Calcula los objetos que intersectan el rayo de selección
+  var intersects = raycaster.intersectObjects(scene.children, true);
+
+  if (intersects[0]) {
+    var object = intersects[0].object;
+
+    if (object.name === 'stacy') {
+      if (!currentlyAnimating) {
+        currentlyAnimating = true;
+        playOnClick();
+      }
+    }
+  }
+} */
+
+
+
+
+  // Get a random animation, and play it 
+  function playOnClick() {
+    let anim = Math.floor(Math.random() * possibleAnims.length) + 0;
+    playModifierAnimation(idle, 0.25, possibleAnims[anim], 0.25);
+  }
+
 
   function playModifierAnimation(from, fSpeed, to, tSpeed) {
     to.setLoop(THREE.LoopOnce);
     to.reset();
     to.play();
     from.crossFadeTo(to, fSpeed, true);
-
     setTimeout(function () {
       from.enabled = true;
       to.crossFadeTo(from, tSpeed, true);
       currentlyAnimating = false;
-
-      // Detener el sonido cuando la animación termina
-      if (currentlyPlayingSound) {
-        currentlyPlayingSound.pause();
-        currentlyPlayingSound.currentTime = 0;
-        currentlyPlayingSound = null;
-      }
     }, to._clip.duration * 1000 - (tSpeed + fSpeed) * 1000);
   }
 
+  /* document.addEventListener('mousemove', function (e) {
+    var mousecoords = getMousePos(e);
+    if (neck && waist) {
 
+      moveJoint(mousecoords, neck, 50);
+      moveJoint(mousecoords, waist, 30);
+    }
+  });
+
+  function getMousePos(e) {
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function moveJoint(mouse, joint, degreeLimit) {
+    let degrees = getMouseDegrees(mouse.x, mouse.y, degreeLimit);
+    joint.rotation.y = THREE.Math.degToRad(degrees.x);
+    joint.rotation.x = THREE.Math.degToRad(degrees.y);
+    console.log(joint.rotation.x);
+  }
+
+  function getMouseDegrees(x, y, degreeLimit) {
+    let dx = 0,
+    dy = 0,
+    xdiff,
+    xPercentage,
+    ydiff,
+    yPercentage;
+
+    let w = { x: window.innerWidth, y: window.innerHeight };
+
+    // Left (Rotates neck left between 0 and -degreeLimit)
+    // 1. If cursor is in the left half of screen
+    if (x <= w.x / 2) {
+      // 2. Get the difference between middle of screen and cursor position
+      xdiff = w.x / 2 - x;
+      // 3. Find the percentage of that difference (percentage toward edge of screen)
+      xPercentage = xdiff / (w.x / 2) * 100;
+      // 4. Convert that to a percentage of the maximum rotation we allow for the neck
+      dx = degreeLimit * xPercentage / 100 * -1;
+    }
+
+    // Right (Rotates neck right between 0 and degreeLimit)
+    if (x >= w.x / 2) {
+      xdiff = x - w.x / 2;
+      xPercentage = xdiff / (w.x / 2) * 100;
+      dx = degreeLimit * xPercentage / 100;
+    }
+    // Up (Rotates neck up between 0 and -degreeLimit)
+    if (y <= w.y / 2) {
+      ydiff = w.y / 2 - y;
+      yPercentage = ydiff / (w.y / 2) * 100;
+      // Note that I cut degreeLimit in half when she looks up
+      dy = degreeLimit * 0.5 * yPercentage / 100 * -1;
+    }
+    // Down (Rotates neck down between 0 and degreeLimit)
+    if (y >= w.y / 2) {
+      ydiff = y - w.y / 2;
+      yPercentage = ydiff / (w.y / 2) * 100;
+      dy = degreeLimit * yPercentage / 100;
+    }
+    return { x: dx, y: dy };
+  } */
 
     // Evento para seguir el movimiento del mouse
 document.addEventListener('mousemove', function (e) {

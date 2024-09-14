@@ -13,18 +13,6 @@
   currentlyAnimating = false, // Used to check whether characters neck is being used in another anim
   raycaster = new THREE.Raycaster(), // Used to detect the click on our character
   loaderAnim = document.getElementById('js-loader');
-  currentlyPlayingSound = null;
-
-  const sounds = [
-    new Audio('https://alibhtty.github.io/apitape/js/audio/ropa.mp3'), /* op busqueda */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op whoosh */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/dance.mp3'), /* op dance */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op salto */
-    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op confused */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* confused */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/saludo.mp3'), /* saludo baile gol */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* op gol */
-  ];
 
   init();
 
@@ -150,7 +138,7 @@
     // Floor
     let floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1, 1);
     let floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0x111333, /* eeeeee */
+      color: 0x111222, /* eeeeee */
       shininess: 0 });
 
 
@@ -228,18 +216,17 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
   }
 
 
-
-
-
   function update() {
     if (mixer) {
       mixer.update(clock.getDelta());
     }
+
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement;
       camera.aspect = canvas.clientWidth / canvas.clientHeight;
       camera.updateProjectionMatrix();
     }
+
     renderer.render(scene, camera);
     requestAnimationFrame(update);
   }
@@ -252,7 +239,9 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     let height = window.innerHeight;
     let canvasPixelWidth = canvas.width / window.devicePixelRatio;
     let canvasPixelHeight = canvas.height / window.devicePixelRatio;
-    const needResize = canvasPixelWidth !== width || canvasPixelHeight !== height;
+
+    const needResize =
+    canvasPixelWidth !== width || canvasPixelHeight !== height;
     if (needResize) {
       renderer.setSize(width, height, false);
     }
@@ -271,12 +260,17 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
       mouse.x = 2 * (e.clientX / window.innerWidth) - 1;
       mouse.y = 1 - 2 * (e.clientY / window.innerHeight);
     }
+    // update the picking ray with the camera and mouse position
     raycaster.setFromCamera(mouse, camera);
+
+    // calculate objects intersecting the picking ray
     var intersects = raycaster.intersectObjects(scene.children, true);
 
     if (intersects[0]) {
       var object = intersects[0].object;
+
       if (object.name === 'stacy') {
+
         if (!currentlyAnimating) {
           currentlyAnimating = true;
           playOnClick();
@@ -285,46 +279,24 @@ textureLoader.load('https://alibhtty.github.io/apitape/js/mixtape.png', function
     }
   }
 
-  // Reproduce una animación aleatoria con sonido, si está disponible
+
+
+  // Get a random animation, and play it 
   function playOnClick() {
-    let animIndex = Math.floor(Math.random() * possibleAnims.length);
-    let selectedAnim = possibleAnims[animIndex];
-
-    // Limitar el índice de sonido al tamaño del arreglo
-    if (animIndex < sounds.length) {
-      // Detener el sonido actual si hay uno reproduciéndose
-      if (currentlyPlayingSound) {
-        currentlyPlayingSound.pause();
-        currentlyPlayingSound.currentTime = 0;
-      }
-
-      // Reproducir el sonido correspondiente
-      currentlyPlayingSound = sounds[animIndex];
-      currentlyPlayingSound.play();
-    } else {
-      console.warn(`No se encontró sonido para la animación con índice ${animIndex}`);
-    }
-
-    playModifierAnimation(idle, 0.25, selectedAnim, 0.25);
+    let anim = Math.floor(Math.random() * possibleAnims.length) + 0;
+    playModifierAnimation(idle, 0.25, possibleAnims[anim], 0.25);
   }
+
 
   function playModifierAnimation(from, fSpeed, to, tSpeed) {
     to.setLoop(THREE.LoopOnce);
     to.reset();
     to.play();
     from.crossFadeTo(to, fSpeed, true);
-
     setTimeout(function () {
       from.enabled = true;
       to.crossFadeTo(from, tSpeed, true);
       currentlyAnimating = false;
-
-      // Detener el sonido cuando la animación termina
-      if (currentlyPlayingSound) {
-        currentlyPlayingSound.pause();
-        currentlyPlayingSound.currentTime = 0;
-        currentlyPlayingSound = null;
-      }
     }, to._clip.duration * 1000 - (tSpeed + fSpeed) * 1000);
   }
 
