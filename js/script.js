@@ -23,7 +23,7 @@
     new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* falta susto */
     new Audio('https://alibhtty.github.io/apitape/js/audio/confuso.mp3'), /* falta confuso */
     new Audio('https://alibhtty.github.io/apitape/js/audio/saludo.mp3'), /* saludo baile gol */
-    new Audio('https://alibhtty.web.app/assets/media/audio/golf.mp3'), /* op gol */
+    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* op gol */
   ];
 
   init();
