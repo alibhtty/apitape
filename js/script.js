@@ -19,11 +19,11 @@
     new Audio('https://alibhtty.github.io/apitape/js/audio/ropa.mp3'), /* op busqueda */
     new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op whoosh */
     new Audio('https://alibhtty.github.io/apitape/js/audio/dance.mp3'), /* op dance */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/whosh.mp3'), /* op salto */
+    new Audio('https://alibhtty.github.io/apitape/js/audio/whoosh.mp3'), /* op salto */
     new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op confused */
     new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* confused */
     new Audio('https://alibhtty.github.io/apitape/js/audio/saludo.mp3'), /* saludo baile gol */
-    new Audio('https://alibhtty.github.io/apitape/js/audio/golf.mp3'), /* op gol */
+    new Audio('https://alibhtty.web.app/assets/media/audio/kick.mp3'), /* op gol */
   ];
 
   init();
